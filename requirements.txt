@@ -1,0 +1,14 @@
+# StudyBuddy - Production Requirements
+# Auto-generated from working local environment
+
+streamlit==1.29.0
+langgraph==0.2.28
+langchain-core==0.2.40
+langchain-groq==0.1.9
+supabase==2.9.0
+postgrest==0.17.2
+pydantic==2.13.5
+python-dotenv==1.0.0
+plotly==5.18.0
+pandas==2.1.4
+requests==2.34.2

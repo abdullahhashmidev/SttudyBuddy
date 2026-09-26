@@ -1,0 +1,23 @@
+# Secrets — NEVER commit
+.env
+.env.local
+streamlit/secrets.toml
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Data & logs (local runtime artifacts)
+data/*.db
+logs/
+.streamlit/cache/
+
+# Backups
+*.backup
+*.broken
+
+# OS
+.DS_Store
+Thumbs.db
