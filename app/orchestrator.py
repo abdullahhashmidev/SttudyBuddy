@@ -164,17 +164,6 @@ def confirmation_handler_node(state: AgentState) -> dict:
     log_node_end("confirmation_handler", "Still awaiting user confirmation (yes/no)")
     return {"is_complete": True}  # Don't loop — wait for next user input
 
-    if last_user_msg in ("yes", "y", "confirm", "go ahead", "do it", "sure"):
-        log_node_end("confirmation_handler", "User confirmed")
-        return {"pending_confirmation": None, "is_complete": False}
-
-    if last_user_msg in ("no", "n", "cancel", "stop", "never mind"):
-        log_node_end("confirmation_handler", "User rejected")
-        return {"pending_confirmation": None, "plan": [], "is_complete": True}
-
-    log_node_end("confirmation_handler", "Awaiting confirmation")
-    return {"is_complete": True}
-
 
 def evaluator_node(state: AgentState) -> dict:
     log_node_start("evaluator", state)

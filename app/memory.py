@@ -1,6 +1,5 @@
 """
 StudyBuddy State Schema & Memory Checkpointer
-Defines the LangGraph AgentState TypedDict and persistent SQLite checkpointer setup.
 """
 
 import sqlite3
@@ -14,14 +13,11 @@ from app.logger import logger
 
 
 class AgentState(TypedDict):
-    """
-    Complete LangGraph State Schema for StudyBuddy Agent.
-    Exact match with Section 4 Architecture Specification.
-    """
-    # Conversation History (Reducer: add_messages appends messages)
+    """Complete LangGraph State Schema"""
+    # Conversation History (Reducer: add_messages appends)
     messages: Annotated[list[BaseMessage], add_messages]
     
-    # Identifiers & Context
+    # Identifiers
     user_id: str
     session_id: str
     current_timestamp: str
@@ -30,32 +26,32 @@ class AgentState(TypedDict):
     intent: str
     
     # Execution Planning
-    plan: list[dict]                        # Form: [{"tool": str, "args": dict}]
-    tool_calls_made: int                    # Max 7 enforced
-    tool_results: Annotated[list[dict], operator.add]  # Accumulated outputs
+    plan: list[dict]
+    tool_calls_made: int
+    tool_results: Annotated[list[dict], operator.add]
     
-    # Human-In-The-Loop Safety Guardrail
-    pending_confirmation: Optional[dict]    # Set on delete/destructive actions
+    # Human-in-the-loop
+    pending_confirmation: Optional[dict]
     
     # Error Management
-    error_state: Optional[dict]             # Form: {"tool": str, "error": str, "retry_count": int}
+    error_state: Optional[dict]
     
-    # Output Synthesis
+    # Output
     agent_response: str
     actions_taken: Annotated[list[dict], operator.add]
     suggested_followups: list[str]
     data_modified: Annotated[list[dict], operator.add]
     
     # Loop Control
-    loop_count: int                         # Max 4 loops enforced
-    is_complete: bool                       # Graph termination flag
+    loop_count: int
+    is_complete: bool
+    
+    # Memory context (carries forward)
+    memory_context: dict
 
 
 def get_sqlite_checkpointer() -> SqliteSaver:
-    """
-    Returns a persistent SQLite checkpointer for LangGraph Memory across turns.
-    Saves graph execution state into studybuddy.db.
-    """
+    """Returns persistent SQLite checkpointer"""
     try:
         conn = sqlite3.connect(DB_PATH, check_same_thread=False)
         checkpointer = SqliteSaver(conn)
@@ -66,19 +62,14 @@ def get_sqlite_checkpointer() -> SqliteSaver:
         raise e
 
 
-def create_initial_state(user_id: str = "student_42", session_id: str = "sess_001", current_timestamp: str = None) -> AgentState:
-    """
-    Helper function to generate a fresh, initialized AgentState.
-    """
+def create_initial_state(user_id: str = "student_42", session_id: str = "sess_001") -> AgentState:
+    """Generate fresh initialized AgentState"""
     from datetime import datetime
-    if not current_timestamp:
-        current_timestamp = datetime.now().isoformat()
-
     return {
         "messages": [],
         "user_id": user_id,
         "session_id": session_id,
-        "current_timestamp": current_timestamp,
+        "current_timestamp": datetime.now().isoformat(),
         "intent": "general_chat",
         "plan": [],
         "tool_calls_made": 0,
@@ -90,5 +81,6 @@ def create_initial_state(user_id: str = "student_42", session_id: str = "sess_00
         "suggested_followups": [],
         "data_modified": [],
         "loop_count": 0,
-        "is_complete": False
+        "is_complete": False,
+        "memory_context": {}
     }

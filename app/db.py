@@ -50,7 +50,7 @@ def verify_supabase() -> bool:
 def init_db():
     """Initialize local SQLite schema. Never crashes on Supabase issues."""
     Path("data").mkdir(exist_ok=True)
-    verify_supabase()
+    pass  # Supabase disabled: spec keeps all data local
 
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row

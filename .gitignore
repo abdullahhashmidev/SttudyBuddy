@@ -21,3 +21,10 @@ logs/
 # OS
 .DS_Store
 Thumbs.db
+
+# local backups / scratch (never commit)
+*.bak
+*.bak.*
+_local_backups/
+studybuddy.zip
+backup_before_patch/

@@ -9,7 +9,10 @@ from langchain_core.messages import HumanMessage
 def main():
     init_db()
     graph = build_graph()
-    config = {"configurable": {"thread_id": "fresh_session_001"}}  # ✅ Changed
+    
+    # CRITICAL: Use consistent thread_id for memory persistence
+    THREAD_ID = "student_42_session_main"
+    config = {"configurable": {"thread_id": THREAD_ID}}
 
     print("📚 StudyBuddy CLI — type 'exit' to quit\n")
 
@@ -21,16 +24,9 @@ def main():
         if not user_input:
             continue
 
+        # Only pass new message - checkpointer handles history
         state_update = {
             "messages": [HumanMessage(content=user_input)],
-            "user_id": "student_42",
-            "session_id": "student_42_session",
-            "intent": "general_chat",
-            "plan": [],
-            "pending_confirmation": None,
-            "error_state": None,
-            "is_complete": False,
-            "tool_calls_made": 0,  # ✅ Added
         }
 
         result = graph.invoke(state_update, config=config)
